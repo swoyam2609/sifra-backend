@@ -1,5 +1,6 @@
 import key
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
+import certifi
 
-client = MongoClient(key.MONGO_URL)
+client = MongoClient(key.MONGO_URL, tlsCAFile=certifi.where())
 db = client.get_database('test')

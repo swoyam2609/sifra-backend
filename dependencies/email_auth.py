@@ -13,7 +13,7 @@ def generate_otp():
 def send_otp(email: str):
     otp = generate_otp()
     expiration_time = datetime.utcnow() + timedelta(minutes=5)
-    # mongo.db.pendingusers.insert_one({"email": email, "otp": otp, "expiration_time": expiration_time})
+    mongo.db.pendingusers.insert_one({"email": email, "otp": otp, "expiration_time": expiration_time})
     subject = 'OTP for Account Verification'
     body = f'Your OTP for password reset is: {otp}'
     email_user = key.EMAIL_LOGIN
