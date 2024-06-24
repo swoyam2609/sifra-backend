@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from model import user
 from dependencies import mongo, email_auth, pass_jwt
 from fastapi.responses import JSONResponse
@@ -70,3 +70,17 @@ async def verify_delete_user(username: str, otp: str):
         return {"message": "User deleted successfully"}
     else:
         return response
+
+
+@router.get("/user", tags=["User"])
+async def getUser(username: str = Depends(pass_jwt.get_current_user)):
+    user = mongo.db.users.find_one({"username": username})
+    if user:
+        content = {
+            "username":user["username"],
+            "email": user["email"],
+            "name": user["name"],
+        }
+        return JSONResponse(content=content, status_code=200)
+    else:
+        return JSONResponse(content={"message": "User not found"}, status_code=404)
