@@ -84,3 +84,11 @@ async def getUser(username: str = Depends(pass_jwt.get_current_user)):
         return JSONResponse(content=content, status_code=200)
     else:
         return JSONResponse(content={"message": "User not found"}, status_code=404)
+    
+@router.post("/user/waitlist", tags=["User"])
+async def add_to_waitlist(email: str):
+    if mongo.db.waitlist.find_one({"email": email}):
+        return JSONResponse(content={"message": "Email already exists in waitlist"}, status_code=400)
+    else:
+        mongo.db.waitlist.insert_one({"email": email})
+        return JSONResponse(content={"message": "Email added to waitlist successfully"}, status_code=201)
