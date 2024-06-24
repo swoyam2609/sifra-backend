@@ -4,7 +4,7 @@ from typing import List
 
 genai.configure(api_key=key.KEY)
 
-model = genai.load_model('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 
 def generateResponse(prevMessages: List[str]):
