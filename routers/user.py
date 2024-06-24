@@ -37,7 +37,7 @@ async def verify_user(user: user.User, otp: str):
         return response
 
 
-@router.post("/users/login", tags=["User"])
+@router.get("/users/login", tags=["User"])
 async def login_user(username: str, password: str):
     user = mongo.db.users.find_one({"username": username})
     if user:

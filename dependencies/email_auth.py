@@ -49,4 +49,3 @@ def verify_otp(email: str, otp: str):
     else:
         return JSONResponse(content={"message": "Email not found"}, status_code=400)
     
-send_otp("b121065@iiit-bh.ac.in")
