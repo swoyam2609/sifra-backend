@@ -12,10 +12,10 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
     if user:
         conversation = mongo.db.conversation.find_one({"username": username})
         if conversation:
-            conversation["conversation"].append(message.data)
+            conversation["conversation"].append(f"{user["name"]}: {message.data}")
             mongo.db.conversation.update_one({"username": username}, {"$set": {"conversation": conversation["conversation"]}})
             response = model.generateResponse(conversation["conversation"])
-            conversation["conversation"].append(response)
+            conversation["conversation"].append(f"sifra: {response}")
             mongo.db.conversation.update_one({"username": username}, {"$set": {"conversation": conversation["conversation"]}})
             return JSONResponse(content={"response": response}, status_code=200)
         else:
@@ -25,3 +25,5 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
             data.append(response)
             mongo.db.conversation.insert_one({"username": username, "conversation": data})
             return JSONResponse(content={"response": response}, status_code=200)
+    else:
+        return JSONResponse(content={"error": "Unauthenticated"}, status_code=404)
