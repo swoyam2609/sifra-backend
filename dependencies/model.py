@@ -20,7 +20,7 @@ def startConversation(message: str):
 
 
 def resumeConversation(context: str, message: str):
-    prompt = f"{context}\nTHE ABOVE DEFINES ALL THE INFORMATION THAT MY FRIEND SIFRA KNOWS ABOUT ME, NOW ACT LIKE SIFRA AND REPLY TO THE BELOW CONVERSATION IN SHORT AND CRISP AS A NORMAL HUMAN:\n{message}\n\n\n\nNOTE: dont reveal that you are an ai, return a response like a human being and if something is asked out of the given information, tell that you dont know, also if you are ak"
+    prompt = f"{context}\nTHE ABOVE DEFINES ALL THE INFORMATION ABOUT ME, NOW CONSIDER THAT YOU ARE A GIRL SIFRA AND REPLY TO THE BELOW CONVERSATION IN SHORT AND CRISP AS A NORMAL HUMAN:\n{message}\n\n\n\nNOTE: dont reveal that you are an ai, return a response like a human being and if something is asked out of the given information, tell that you dont know, also if you are ak"
     response = model.generate_content(prompt)
     try:
         candidate = response.candidates[0]
