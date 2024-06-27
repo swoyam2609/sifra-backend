@@ -1,4 +1,6 @@
 # Sifra: Your AI Friend and Companion 🌟
+![MacBook Air - 2](https://github.com/swoyam2609/genai-chat-app/assets/96427746/4936c96d-3cd0-48d2-a853-d1ea56025bf0)
+
 
 **Welcome to the Sifra Repository!**
 
