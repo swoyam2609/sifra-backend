@@ -12,10 +12,10 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
     if user:
         conversation = mongo.db.conversation.find_one({"username": username})
         if conversation:
-            conversation["conversation"].append(f"{user["name"]}: {message.data}")
+            conversation["conversation"].append(f"ME: {message.data}")
             mongo.db.conversation.update_one({"username": username}, {"$set": {"conversation": conversation["conversation"]}})
             response = model.generateResponse(conversation["conversation"])
-            conversation["conversation"].append(f"sifra: {response}")
+            conversation["conversation"].append(f"SIFRA: {response}")
             mongo.db.conversation.update_one({"username": username}, {"$set": {"conversation": conversation["conversation"]}})
             return JSONResponse(content={"response": response}, status_code=200)
         else:
