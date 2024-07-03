@@ -19,16 +19,16 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
                 {
                     "userType": 0,
                     "time": datetime.utcnow(),
-                    "message": message.data
+                    'message': message.data
                 }
             )
             prevContext = conversation["conversation"]
             currentChats = []
             for i in chats:
                 if i["userType"]==0:
-                    currentChats.append(f"ME: {i["message"]}")
+                    currentChats.append(f"ME: {i['message']}")
                 else:
-                    currentChats.append(f"SIFRA: {i["message"]}")
+                    currentChats.append(f"SIFRA: {i['message']}")
             response = model.resumeConversation(prevContext, message.data, currentChats)
             context = model.makeContext(message.data, response, prevContext)
             mongo.db.conversation.update_one({"username": username}, {
@@ -37,7 +37,7 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
                 {
                     "userType": 1,
                     "time": datetime.utcnow(),
-                    "message": response
+                    'message': response
                 }
             )
             mongo.db.chats.update_one({"username": username}, {
@@ -48,7 +48,7 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
                 {
                     "userType": 0,
                     "time": datetime.utcnow(),
-                    "message": message.data
+                    'message': message.data
                 }
             ]
             response = model.startConversation(message.data)
@@ -59,7 +59,7 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
                 {
                     "userType": 1,
                     "time": datetime.utcnow(),
-                    "message": response
+                    'message': response
                 }
             )
             mongo.db.chats.insert_one({"username": username, "chat": messages})
