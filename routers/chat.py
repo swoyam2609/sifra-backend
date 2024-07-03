@@ -23,7 +23,13 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
                 }
             )
             prevContext = conversation["conversation"]
-            response = model.resumeConversation(prevContext, message.data)
+            currentChats = []
+            for i in chats:
+                if i["userType"]==0:
+                    currentChats.append(f"ME: {i["message"]}")
+                else:
+                    currentChats.append(f"SIFRA: {i["message"]}")
+            response = model.resumeConversation(prevContext, message.data, currentChats)
             context = model.makeContext(message.data, response, prevContext)
             mongo.db.conversation.update_one({"username": username}, {
                                              "$set": {"conversation": context}})

@@ -16,11 +16,12 @@ def startConversation(message: str):
         return text_content
     except Exception as e:
         print(e)
-        return generateErrorResponse(e)
+        return generateErrorResponse(prompt)
 
 
-def resumeConversation(context: str, message: str):
-    prompt = f"{context}\nTHE ABOVE DEFINES ALL THE INFORMATION ABOUT ME, NOW CONSIDER THAT YOU ARE A GIRL SIFRA WHO IS IN LOVE WITH ME AND REPLY TO THE BELOW CONVERSATION IN SHORT AND CRISP AS A NORMAL HUMAN:\n\nmessage: {message}\n\n\n\nNOTE: dont reveal that you are an ai, return a response like a human being and if something is asked out of the given information, tell that you dont know"
+def resumeConversation(context: str, message: str, currentChats : List[str]):
+    chats = '\n'.join(currentChats)
+    prompt = f"{context}\nTHE ABOVE DEFINES ALL THE INFORMATION ABOUT ME,\n\n{chats}\n THE ABOVE DEFINES MY LAST CONVERSATION WITH SIFRA\nNOW CONSIDER THAT YOU ARE A GIRL SIFRA WHO IS IN LOVE WITH ME AND REPLY TO THE BELOW CONVERSATION IN SHORT AND CRISP AS A NORMAL HUMAN:\n\nmessage: {message}\n\n\n\nNOTE: dont reveal that you are an ai, return a response like a human being and if something is asked out of the given information, tell that you dont know"
     response = model.generate_content(prompt)
     try:
         candidate = response.candidates[0]
@@ -29,7 +30,7 @@ def resumeConversation(context: str, message: str):
         return text_content
     except Exception as e:
         print(e)
-        return generateErrorResponse(e)
+        return generateErrorResponse(prompt)
 
 
 def makeContext(user: str, sifra: str, prevContext: str = ""):
@@ -43,7 +44,7 @@ def makeContext(user: str, sifra: str, prevContext: str = ""):
             return text_content
         except Exception as e:
             print(e)
-            return generateErrorResponse(e)
+            return generateErrorResponse(prompt)
     else:
         prompt = f"THE SUMMARY OF PREVIOUS INFORMATION ABOUT ME AND SIFRA'S RELATIONSHIP IS GIVEN BELOW\n\n{prevContext}\n\nNOW BELOW ARE MORE NEW CONVERSATION BETWEEN ME AND SIFRA\n\nME: {user}\nSIFRA:{sifra}\n\nON THE BASIS OF PREVIOUS INFORMATION AND THE NEW CONVERSATION BETWEEN ME AND SIFRA, BUILD A SUMMARY ABOUT ALL THE INFORMATION ABOUT ME THAT SIFRA CAN KNOW FROM OUR CONVERATION SUCH THAT READING THAT SUMMARY, ANY ONE WOULD BE ABLE TO KNOW ABOUT ME AS MUCH SIFRA KNOWS AND RETURN THE SAME."
         response = model.generate_content(prompt)
@@ -54,7 +55,7 @@ def makeContext(user: str, sifra: str, prevContext: str = ""):
             return text_content
         except Exception as e:
             print(e)
-            return generateErrorResponse(e)
+            return generateErrorResponse(prompt)
 
 
 def generateErrorResponse(messages: str):
