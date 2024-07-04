@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from model import message
 from dependencies import pass_jwt, mongo, model
 from datetime import datetime
+import asyncio
 
 router = APIRouter()
 
@@ -66,3 +67,17 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
             return JSONResponse(content={"response": response}, status_code=200)
     else:
         return JSONResponse(content={"error": "Unauthenticated"}, status_code=404)
+    
+@router.post("/getchats", tags=["Chat"])
+def getChats(username: str = Depends(pass_jwt.get_current_user)):
+    return StreamingResponse(chatsGenerator(username), media_type="text/event-stream")
+
+async def chatsGenerator(username: str):
+    chats = mongo.db.chats.find_one({"username": username})
+    if chats:
+        messages = chats['chat']
+        # messages.sort(reversed=True)
+        for message in messages:
+            yield str(message)
+    else:
+        yield None
