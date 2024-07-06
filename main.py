@@ -1,27 +1,35 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
+import speech_recognition as sr
+import key
+from dependencies import speech
+from model import message
 from routers import user, chat
-
-app = FastAPI()
-
-app.include_router(user.router)
-app.include_router(chat.router)
-
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.get("/")
-def index():
-    return {"author" : "Swoyam"}
+import asyncio
+import json
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=3000)
+recognizer = sr.Recognizer()
+
+token = asyncio.run(user.login_user(key.USERNAME, key.PASSWORD))
+token = token['token']
+print(token)
+
+while True:
+    with sr.Microphone() as source:
+        print("Listening :")
+        recognizer.adjust_for_ambient_noise(source, duration=0.3)
+        audio = recognizer.listen(source)
+        try:
+            text = recognizer.recognize_google(audio)
+            speech.printUser(text)
+            if 'jarvis' in text.lower():
+                msg = message.Message(data=text)
+                response = asyncio.run(chat.chat(msg, master=key.USERNAME, username=token))
+                response = response.body.decode()
+                response = json.loads(response)
+                response = response['response']
+                speech.speak(response)
+            elif 'shutdown' in text:
+                speech.speak('Shutting down')
+                break
+        except Exception as e:
+            print("Error : {}".format(e))

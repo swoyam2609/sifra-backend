@@ -9,7 +9,9 @@ router = APIRouter()
 
 
 @router.post("/chat", tags=["Chat"])
-async def chat(message: message.Message, username: str = Depends(pass_jwt.get_current_user)):
+async def chat(message: message.Message, master:str = "",  username: str = Depends(pass_jwt.get_current_user)):
+    if master != "":
+        username=master
     user = mongo.db.users.find_one({"username": username})
     if user:
         conversation = mongo.db.conversation.find_one({"username": username})
