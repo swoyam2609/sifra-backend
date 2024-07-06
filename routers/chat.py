@@ -26,11 +26,14 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
             prevContext = conversation["conversation"]
             currentChats = []
             for i in chats:
-                if i["userType"]==0:
+                if i["userType"] == 0:
                     currentChats.append(f"ME: {i['message']}")
                 else:
                     currentChats.append(f"SIFRA: {i['message']}")
-            response = model.resumeConversation(prevContext, message.data, currentChats)
+            if (len(currentChats) >= 15):
+                currentChats = currentChats[-15:]
+            response = model.resumeConversation(
+                prevContext, message.data, currentChats)
             context = model.makeContext(message.data, response, prevContext)
             mongo.db.conversation.update_one({"username": username}, {
                                              "$set": {"conversation": context}})
@@ -67,10 +70,12 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
             return JSONResponse(content={"response": response}, status_code=200)
     else:
         return JSONResponse(content={"error": "Unauthenticated"}, status_code=404)
-    
+
+
 @router.post("/getchats", tags=["Chat"])
 def getChats(username: str = Depends(pass_jwt.get_current_user)):
     return StreamingResponse(chatsGenerator(username), media_type="text/event-stream")
+
 
 async def chatsGenerator(username: str):
     chats = mongo.db.chats.find_one({"username": username})
