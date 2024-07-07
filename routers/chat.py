@@ -81,7 +81,7 @@ async def chatsGenerator(username: str):
     chats = mongo.db.chats.find_one({"username": username})
     if chats:
         messages = chats['chat']
-        # messages.sort(reversed=True)
+        messages.reverse()
         for message in messages:
             yield str(message)
     else:
