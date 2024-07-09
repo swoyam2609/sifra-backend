@@ -30,8 +30,8 @@ async def chat(message: message.Message, username: str = Depends(pass_jwt.get_cu
                     currentChats.append(f"ME: {i['message']}")
                 else:
                     currentChats.append(f"SIFRA: {i['message']}")
-            if (len(currentChats) >= 15):
-                currentChats = currentChats[-15:]
+            if (len(currentChats) > 200):
+                currentChats = currentChats[-200:]
             response = model.resumeConversation(
                 prevContext, message.data, currentChats)
             context = model.makeContext(message.data, response, prevContext)

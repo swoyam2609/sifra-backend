@@ -11,7 +11,8 @@ async def signup(user: user.User):
         "username": user.username,
         "name": user.name,
         "email": user.email,
-        "password": pass_jwt.create_hashed_password(user.password)
+        "password": pass_jwt.create_hashed_password(user.password),
+        "verified" : user.verified
     }
     mongo.db.users.insert_one(newuser)
     return {"message": "User created successfully"}
@@ -80,8 +81,18 @@ async def getUser(username: str = Depends(pass_jwt.get_current_user)):
             "username":user["username"],
             "email": user["email"],
             "name": user["name"],
+            "verify": user["verified"]
         }
         return JSONResponse(content=content, status_code=200)
+    else:
+        return JSONResponse(content={"message": "User not found"}, status_code=404)
+    
+@router.put("/user/verify", tags=["User"])
+async def verify_user(username: str = Depends(pass_jwt.get_current_user)):
+    user = mongo.db.users.find_one({"username": username})
+    if user:
+        mongo.db.users.update_one({"username": username}, {"$set": {"verified": True}})
+        return JSONResponse(content={"message":"policies agreed"}, status_code=200)
     else:
         return JSONResponse(content={"message": "User not found"}, status_code=404)
     
