@@ -77,12 +77,27 @@ def getChats(username: str = Depends(pass_jwt.get_current_user)):
     return StreamingResponse(chatsGenerator(username), media_type="text/event-stream")
 
 
+def format_datetime(datetime_str):
+    # Parse the datetime string
+    dt = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S.%f")
+
+    # Format the date and time
+    formatted_date = dt.strftime("%d-%m-%Y")
+    formatted_time = dt.strftime("%H:%M")
+
+    # Return the formatted result
+    return {
+        "date": formatted_date,
+        "time": formatted_time
+    }
+
 async def chatsGenerator(username: str):
     chats = mongo.db.chats.find_one({"username": username})
     if chats:
         messages = chats['chat']
         messages.reverse()
         for message in messages:
+            message['time']=format_datetime(str(message['time']))
             yield str(message)
     else:
         yield None
