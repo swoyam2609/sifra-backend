@@ -4,6 +4,7 @@ from model import message
 from dependencies import pass_jwt, mongo, model
 from datetime import datetime
 import asyncio
+import pytz
 
 router = APIRouter()
 
@@ -78,18 +79,24 @@ def getChats(username: str = Depends(pass_jwt.get_current_user)):
 
 
 def format_datetime(datetime_str):
-    # Parse the datetime string
-    dt = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S.%f")
+    # Parse the datetime string in GMT
+    gmt = pytz.timezone('GMT')
+    dt = gmt.localize(datetime.strptime(datetime_str, "%Y-%m-%d %H:%M:%S.%f"))
+
+    # Convert to IST
+    ist = pytz.timezone('Asia/Kolkata')
+    dt_ist = dt.astimezone(ist)
 
     # Format the date and time
-    formatted_date = dt.strftime("%d-%m-%Y")
-    formatted_time = dt.strftime("%H:%M")
+    formatted_date = dt_ist.strftime("%d-%m-%Y")
+    formatted_time = dt_ist.strftime("%H:%M:%S")
 
     # Return the formatted result
     return {
         "date": formatted_date,
         "time": formatted_time
     }
+
 
 async def chatsGenerator(username: str):
     chats = mongo.db.chats.find_one({"username": username})
