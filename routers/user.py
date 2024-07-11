@@ -41,10 +41,18 @@ async def verify_user(user: user.User, otp: str):
 @router.get("/users/login", tags=["User"])
 async def login_user(username: str, password: str):
     user = mongo.db.users.find_one({"username": username})
+    userEmail = mongo.db.users.find_one({"email": username})
     if user:
         if pass_jwt.verify_password(password, user["password"]):
             jwt_token = pass_jwt.create_jwt_token(
                 {"username": user["username"]})
+            return {"message": "Login successful", "token": jwt_token, "token_type": "bearer"}
+        else:
+            return JSONResponse(content={"message": "Password is incorrect"}, status_code=400)
+    elif userEmail:
+        if pass_jwt.verify_password(password, userEmail["password"]):
+            jwt_token = pass_jwt.create_jwt_token(
+                {"username": userEmail["username"]})
             return {"message": "Login successful", "token": jwt_token, "token_type": "bearer"}
         else:
             return JSONResponse(content={"message": "Password is incorrect"}, status_code=400)
