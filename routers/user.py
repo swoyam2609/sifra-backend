@@ -117,10 +117,10 @@ async def forget_password(email: str):
     user = mongo.db.users.find_one({"email": email})
     username = mongo.db.users.find_one({"username":email})
     if user:
-        email_auth.send_otp(email)
+        email_auth.send_otp_reset(email)
         return JSONResponse(content={"message": "OTP sent successfully"}, status_code=200)
     elif username:
-        email_auth.send_otp(username["email"])
+        email_auth.send_otp_reset(username["email"])
         return JSONResponse(content={"message": "OTP sent successfully"}, status_code=200)
     else:
         return JSONResponse(content={"message": "Email/Username not found"}, status_code=404)
