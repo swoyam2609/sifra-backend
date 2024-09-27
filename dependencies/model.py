@@ -93,3 +93,15 @@ def generateErrorResponse(messages: str):
     except Exception as e:
         print(e)
         return "You are crossing your boundaries, I am never going to talk to you ever again"
+
+def chatWithStory(story: str, message: str):
+    prompt = f"{story}\n\nGO THROUGH THE ABOVE STORY, YOU ARE SIFRA, A INTERACTIVE STORY TELLING ASSISTANT, NOW ACCORDING TO YOUR UNDERSTANDING OF THE STORY, REPLY TO THE FOLLOWING MESSAGE:\n{message}\n\n\nInstructions:\n- dont reveal that you are an ai, return a response like a human being and if something is asked out of the given information, tell that you dont know\n- If asked to make changes to the story, ask the user to ask the same to gemma as you dont hae the authority to make changes to the same"
+    response = model.generate_content(prompt, safety_settings=safe)
+    try:
+        candidate = response.candidates[0]
+        content = candidate.content
+        text_content = content.parts[0].text
+        return text_content
+    except Exception as e:
+        print(e)
+        return generateErrorResponse(prompt)
