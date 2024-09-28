@@ -74,11 +74,9 @@ async def publish_story(
             story.published = True
             paras = re.findall(r"<p>(.*?)</p>", story_content, re.DOTALL)
             images = []
-            print('\n\n'.join(paras))
             for para in paras:
                 img = await create_image(story_content, para)
                 images.append(img)
-                print("Created Image"+str(img))
             story.images = images
             mongo.db.stories.update_one(
                 {"uniqueId": story.uniqueId},
@@ -104,7 +102,6 @@ async def publish_story(
                 if img == None:
                     img = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl9fz28isrzcTfAv5BhSGDv8Iy9XGMXTcZIg&s"
                 images.append(img)
-                print("Created Image"+str(img))
             story.images = images
             mongo.db.stories.update_one(
                 {
@@ -150,9 +147,11 @@ async def get_all_stories():
         for story in stories:
             if story["published"] == True:
                 temp = {
-                    "username":story["username"],
+                    "username": story["username"],
                     "uniqueId": story["uniqueId"],
-                    "title": re.findall(r"<h1>(.*?)</h1>", story["story"], re.DOTALL)[0],
+                    "title": re.findall(r"<h1>(.*?)</h1>", story["story"], re.DOTALL)[
+                        0
+                    ],
                     "published": story["published"],
                     "image": story["images"][0],
                 }
@@ -160,3 +159,24 @@ async def get_all_stories():
         return JSONResponse({"stories": resultStories}, status_code=200)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+
+
+@router.get("/sifra-extended/story/getstory", tags=["Sifra-Extended"])
+async def get_story(uniqueId: str, username: str = Depends(pass_jwt.get_current_user)):
+    user = mongo.db.users.find_one({"username": username})
+    if user:
+        story = mongo.db.stories.find_one({"uniqueId": uniqueId})
+        if story:
+            return JSONResponse(
+                {
+                    "uniqueId":story["uniqueId"],
+                    "story": story["story"],
+                    "published":story["published"],
+                    "images":story["images"]
+                },
+                status_code=200,
+            )
+        else:
+            return JSONResponse(content={"error": "story not found"}, status_code=404)
+    else:
+        return JSONResponse(content={"error": "user not found"}, status_code=404)
