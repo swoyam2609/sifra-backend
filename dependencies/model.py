@@ -172,4 +172,4 @@ def generate_image(prompt: str) -> str:
 
     except Exception as e:
         print(f"Error generating image: {e}")
-        return None
+        return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl9fz28isrzcTfAv5BhSGDv8Iy9XGMXTcZIg&s"
