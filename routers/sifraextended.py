@@ -163,8 +163,6 @@ async def get_all_stories():
 
 @router.get("/sifra-extended/story/getstory", tags=["Sifra-Extended"])
 async def get_story(uniqueId: str):
-    user = mongo.db.users.find_one({"username": username})
-    if user:
         story = mongo.db.stories.find_one({"uniqueId": uniqueId})
         if story:
             return JSONResponse(
@@ -178,5 +176,3 @@ async def get_story(uniqueId: str):
             )
         else:
             return JSONResponse(content={"error": "story not found"}, status_code=404)
-    else:
-        return JSONResponse(content={"error": "user not found"}, status_code=404)
