@@ -103,8 +103,9 @@ async def publish_story(
                     img = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl9fz28isrzcTfAv5BhSGDv8Iy9XGMXTcZIg&s"
                 images.append(img)
             story.images = images
-            mongo.db.stories.update_one(
+            mongo.db.stories.insert_one(
                 {
+                    "username":username,
                     "uniqueId": story.uniqueId,
                     "story": story.content,
                     "published": story.published,
