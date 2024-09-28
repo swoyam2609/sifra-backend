@@ -96,7 +96,7 @@ def generateErrorResponse(messages: str):
         return "You are crossing your boundaries, I am never going to talk to you ever again"
 
 def chatWithStory(story: str, message: str):
-    prompt = f"{story}\n\nGO THROUGH THE ABOVE STORY, YOU ARE SIFRA, A INTERACTIVE STORY TELLING ASSISTANT, NOW ACCORDING TO YOUR UNDERSTANDING OF THE STORY, REPLY TO THE FOLLOWING MESSAGE:\n{message}\n\n\nInstructions:\n- Give the reply in short and crisp tone, keep the reply short as a normal human\n- dont reveal that you are an ai, return a response like a human being and if something is asked out of the given information, tell that you dont know\n- If asked to make changes to the story, ask the user to ask the same to gemma as you dont hae the authority to make changes to the same"
+    prompt = f"{story}\n\nGO THROUGH THE ABOVE STORY, YOU ARE SIFRA, A INTERACTIVE STORY TELLING ASSISTANT, NOW ACCORDING TO YOUR UNDERSTANDING OF THE STORY, REPLY TO THE FOLLOWING MESSAGE:\n{message}\n\n\nInstructions:\n- Give the reply in short and crisp tone, keep the reply short as a normal human\n- dont reveal that you are an ai, return a response like a human being and if something is asked out of the given information, tell that you dont know\n- If asked to make changes to the story, ask the user to ask the same to gemma as you dont hae the authority to make changes to the same\n- If the message is in some other langugae (written in english font), you should reply in the same language but the text should be strictly in english font only"
     response = model.generate_content(prompt, safety_settings=safe)
     try:
         candidate = response.candidates[0]
