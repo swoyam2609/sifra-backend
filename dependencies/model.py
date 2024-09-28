@@ -119,3 +119,56 @@ def editStory(story: str, prompt: str):
     except Exception as e:
         print(e)
         return generateErrorResponse(prompt)
+    
+def makeImagePrompt(story:str, chunk: str):
+    prompt = f"You are an AI Agent tasked with Prompt Engineer tasks, you are provided with a chunk of story, you need to create an Image for the provided chunk, create a prompt for the required image that would best suit the case\nStory: {story}\nChunk: {chunk}\nInstructions:\n- Ig the chunk is empty, you should return a prompt for creating an image showing no chunk\n- If the chunk contains invalid data, you should return a prompt for creating image for showing that the chunk containes invalid data\n- revise the prompt to be safe for the image generator AI, the refined prompt should follow all the safety rules for AI Generation\n- the refined prompt should contain all the information that relates with the story"
+    response = model.generate_content(prompt, safety_settings=safe)
+    try:
+        candidate = response.candidates[0]
+        content = candidate.content
+        text_content = content.parts[0].text
+        return text_content
+    except Exception as e:
+        print(e)
+        return generateErrorResponse(prompt)
+    
+import os
+import httpx
+from openai import AzureOpenAI
+import json
+
+# Initialize the AzureOpenAI client
+client = AzureOpenAI(
+    api_version="2024-02-01",
+    api_key="274bfc3a00214f9eaace7f684a5b2b57",
+    azure_endpoint="https://projectinnovate.openai.azure.com/"
+)
+
+def generate_image(prompt: str) -> str:
+    """
+    Generate an image using the DALL-E 3 model and return the image URL.
+
+    :param prompt: Text description for generating the image.
+    :return: URL of the generated image.
+    """
+    try:
+        # Generate image with the given prompt
+        result = client.images.generate(
+            model="dall-e-3",  # the name of your DALL-E 3 deployment
+            prompt=prompt,
+            n=1
+        )
+
+        print("formed result")
+
+        # Parse the response JSON
+        json_response = json.loads(result.model_dump_json())
+        
+        # Get the image URL
+        image_url = json_response["data"][0]["url"]
+        
+        return image_url
+
+    except Exception as e:
+        print(f"Error generating image: {e}")
+        return None

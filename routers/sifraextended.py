@@ -20,3 +20,12 @@ async def sifra_extended_(data: message.EditStory):
         return JSONResponse(content={"response": response}, status_code=200)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+@router.post("/sifra-extended/image", tags=["Sifra-Extended"])
+async def create_image(story:str, chunk: str):
+    try:
+        refinedPrompt = model.makeImagePrompt(story, chunk)
+        imageUrl = model.generate_image(refinedPrompt)
+        return JSONResponse(content={"url": imageUrl}, status_code=200)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
