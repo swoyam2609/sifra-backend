@@ -1,6 +1,7 @@
 import google.generativeai as genai
 import key
 from typing import List
+import re
 
 genai.configure(api_key=key.KEY)
 
@@ -101,6 +102,19 @@ def chatWithStory(story: str, message: str):
         candidate = response.candidates[0]
         content = candidate.content
         text_content = content.parts[0].text
+        return text_content
+    except Exception as e:
+        print(e)
+        return generateErrorResponse(prompt)
+    
+def editStory(story: str, prompt: str):
+    prompt = f"You are an AI Agent tasked with making changes to the story provided in HTML Format. Your task is to go through the HTML formatted story, understand the context and make the changes in the story according to the prompt\nStory: {story}\n\nPrompt: {prompt}\n\n\nInstructions:\n- You have to return the complete story as one response\n- You should strictly return the response in HTML format\n- Make changes in the story and give me only the story in html format\n- You should separate different paragraphs in <p></p> tags\n- you should create headings using <h1> tags and subheadings using <h2>, <h3> and all\n- Important elements like bold elements and italic elements should be wrapped with their respective <b> and <i> tags\n- If the story is empty, create the story from beginning following the above restrictions\n- If the prompt is irrelevant to the story, or is inappropriate in any kind, you should return the story unchanged back\n- the response should only contain the story response, notthing else should be added as suggestion"
+    response = model.generate_content(prompt, safety_settings=safe)
+    try:
+        candidate = response.candidates[0]
+        content = candidate.content
+        text_content = content.parts[0].text
+        text_content = str(text_content).replace("\n","").replace("\"","'").replace("\'","'")
         return text_content
     except Exception as e:
         print(e)

@@ -8,16 +8,6 @@ import pytz
 
 router = APIRouter()
 
-@router.post("/sifra-extended/chat", tags=["Sifra-Extended"])
-async def sifra_extended_chat(data: message.StoryChat):
-    try:
-        response = model.chatWithStory(data.story, data.message)
-        return JSONResponse(content={"response": response}, status_code=200)
-    except Exception as e:
-        return JSONResponse(content={"error": str(e)}, status_code=500)
-
-
-
 @router.post("/chat", tags=["Chat"])
 async def chat(message: message.Message, username: str = Depends(pass_jwt.get_current_user)):
     user = mongo.db.users.find_one({"username": username})
