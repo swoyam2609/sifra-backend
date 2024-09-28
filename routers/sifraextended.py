@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from model import message, story
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from dependencies import model, pass_jwt, mongo
 import random
 import re
+import os
 
 router = APIRouter()
 
@@ -177,3 +178,13 @@ async def get_story(uniqueId: str):
             )
         else:
             return JSONResponse(content={"error": "story not found"}, status_code=404)
+
+@router.get("/sifra-extended/cdn", tags=["Sifra-Extended"])
+async def get_cdn(filename: str):
+    file_path = os.path.join("./images", filename)
+
+    # Check if the file exists
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    else:
+        return JSONResponse(content={"error": "Image Not Found"}, status_code=404)

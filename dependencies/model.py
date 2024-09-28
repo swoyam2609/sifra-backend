@@ -1,7 +1,8 @@
 import google.generativeai as genai
 import key
 from typing import List
-import re
+import requests
+import random
 
 genai.configure(api_key=key.KEY)
 
@@ -146,10 +147,10 @@ client = AzureOpenAI(
 
 def generate_image(prompt: str) -> str:
     """
-    Generate an image using the DALL-E 3 model and return the image URL.
+    Generate an image using the DALL-E 3 model, download it, save it in the 'images' folder, and return the filename.
 
     :param prompt: Text description for generating the image.
-    :return: URL of the generated image.
+    :return: Filename of the saved image.
     """
     try:
         # Generate image with the given prompt
@@ -164,12 +165,37 @@ def generate_image(prompt: str) -> str:
 
         # Parse the response JSON
         json_response = json.loads(result.model_dump_json())
-        
+
         # Get the image URL
         image_url = json_response["data"][0]["url"]
-        
-        return image_url
 
     except Exception as e:
         print(f"Error generating image: {e}")
-        return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl9fz28isrzcTfAv5BhSGDv8Iy9XGMXTcZIg&s"
+        # If image generation fails, return a default image URL
+        image_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl9fz28isrzcTfAv5BhSGDv8Iy9XGMXTcZIg&s"
+
+    try:
+        # Ensure the 'images' folder exists
+        if not os.path.exists('./images'):
+            os.makedirs('./images')
+
+        # Generate a random filename with a random number
+        random_number = random.randint(0, 99999999)
+        file_name = f"{random.randint(0, 99999999)}_{random.randint(0, 99999999)}.png"
+        file_path = os.path.join('./images', file_name)
+
+        # Download the image from the URL
+        response = requests.get(image_url)
+        if response.status_code == 200:
+            # Save the image
+            with open(file_path, 'wb') as f:
+                f.write(response.content)
+            print(f"Image downloaded and saved as {file_name}")
+        else:
+            raise Exception(f"Failed to download image. Status code: {response.status_code}")
+
+        return file_name
+
+    except Exception as e:
+        print(f"Error saving image: {e}")
+        return None
