@@ -140,8 +140,8 @@ import json
 # Initialize the AzureOpenAI client
 client = AzureOpenAI(
     api_version="2024-02-01",
-    api_key="274bfc3a00214f9eaace7f684a5b2b57",
-    azure_endpoint="https://projectinnovate.openai.azure.com/"
+    api_key=key.AZURE_API_KEY,
+    azure_endpoint=key.AZURE_ENDPOINT
 )
 
 def generate_image(prompt: str) -> str:
