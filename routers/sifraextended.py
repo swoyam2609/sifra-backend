@@ -86,7 +86,7 @@ async def publish_story(
                 {"uniqueId": story.uniqueId},
                 {
                     "$set": {
-                        "story": story.content,
+                        "story": story.content.replace('<h1 data-level="1">','<h1>'),
                         "published": story.published,
                         "images": story.images,
                     }
