@@ -59,7 +59,10 @@ async def save_story(
                     "images": story.images,
                 }
             )
-        return JSONResponse(content={"respone": "saved successfully"}, status_code=200)
+        return JSONResponse(
+            content={"respone": "saved successfully", "uniqueId": story.uniqueId},
+            status_code=200,
+        )
     else:
         return JSONResponse(content={"error": "user not found"}, status_code=404)
 
@@ -106,7 +109,7 @@ async def publish_story(
             story.images = images
             mongo.db.stories.insert_one(
                 {
-                    "username":username,
+                    "username": username,
                     "uniqueId": story.uniqueId,
                     "story": story.content,
                     "published": story.published,
@@ -114,7 +117,11 @@ async def publish_story(
                 }
             )
             return JSONResponse(
-                content={"respone": "published successfully"}, status_code=200
+                content={
+                    "respone": "published successfully",
+                    "uniqueID": story.uniqueId,
+                },
+                status_code=200,
             )
     else:
         return JSONResponse(
@@ -165,19 +172,20 @@ async def get_all_stories():
 
 @router.get("/sifra-extended/story/getstory", tags=["Sifra-Extended"])
 async def get_story(uniqueId: str):
-        story = mongo.db.stories.find_one({"uniqueId": uniqueId})
-        if story:
-            return JSONResponse(
-                {
-                    "uniqueId":story["uniqueId"],
-                    "story": story["story"],
-                    "published":story["published"],
-                    "images":story["images"]
-                },
-                status_code=200,
-            )
-        else:
-            return JSONResponse(content={"error": "story not found"}, status_code=404)
+    story = mongo.db.stories.find_one({"uniqueId": uniqueId})
+    if story:
+        return JSONResponse(
+            {
+                "uniqueId": story["uniqueId"],
+                "story": story["story"],
+                "published": story["published"],
+                "images": story["images"],
+            },
+            status_code=200,
+        )
+    else:
+        return JSONResponse(content={"error": "story not found"}, status_code=404)
+
 
 @router.get("/sifra-extended/cdn", tags=["Sifra-Extended"])
 async def get_cdn(filename: str):
