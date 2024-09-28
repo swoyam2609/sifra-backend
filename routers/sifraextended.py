@@ -162,7 +162,7 @@ async def get_all_stories():
 
 
 @router.get("/sifra-extended/story/getstory", tags=["Sifra-Extended"])
-async def get_story(uniqueId: str, username: str = Depends(pass_jwt.get_current_user)):
+async def get_story(uniqueId: str):
     user = mongo.db.users.find_one({"username": username})
     if user:
         story = mongo.db.stories.find_one({"uniqueId": uniqueId})
