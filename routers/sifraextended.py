@@ -111,7 +111,7 @@ async def publish_story(
                 {
                     "username": username,
                     "uniqueId": story.uniqueId,
-                    "story": story.content,
+                    "story": story.content.replace('<h1 data-level="1">','<h1>'),
                     "published": story.published,
                     "images": story.images,
                 }
